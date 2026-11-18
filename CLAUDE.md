@@ -34,6 +34,7 @@ The board is published at <https://github.com/startr-trade/sigillr-board>. Clone
 - The source of truth is a git repository of YAML records and public keys; only the service writes to it, and anyone can read it
 - The relational index is disposable, rebuilt from the repository, and used only for faster responses
 - A user_id or pseudonym that looks like an email address (including obfuscated forms) is refused
+- Published values stay in the public git history permanently (history is never rewritten), and users are told so, and acknowledge it, before anything is published
 
 **How work moves here** — each stage asks only for what it needs; `kanbanr check <CODE>` names what the next one still lacks:
 
