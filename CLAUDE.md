@@ -4,6 +4,8 @@
 
 The board is the system of record for scope, reasoning, progress and documentation. It is a separate git repository beside this one. **Recover from it at the start of every session** and record work there as you go — this block is a pointer, not a copy.
 
+The board is published at <https://github.com/startr-trade/sigillr-board>. Clone it beside this repository as `sigillr.kanbanr` (`git clone https://github.com/startr-trade/sigillr-board ../sigillr.kanbanr`) and kanbanr finds it.
+
 **Why this project exists.** sigillr (Latin sigillum: seal, signet) is a public identity registry. People and organisations register the public keys of their certificates themselves; the site logs them in with that very certificate (mTLS); anyone can verify which person or organisation a key or certificate is bound to. It is the global identity registry koshr's identity claim rests on. sigillr is open-source software anyone can run; the public instance is run by provr at sigillr.provr.dev.
 
 **What it commits to** (work items link these by id):
@@ -11,7 +13,7 @@ The board is the system of record for scope, reasoning, progress and documentati
 - `G-0` The system stays operable and maintainable
 - `G-1` Self-registration, where a person registers a key by logging in with the certificate it belongs to (mTLS)
 - `G-2` Public verification, where anyone looks up a key or certificate and gets the bound identity and its status
-- `G-3` Revocation and expiry are visible to verifiers at once
+- `G-3` Revocation and expiry are visible to verifiers at once, including revocation by a certificate's issuing CA (CRL and OCSP)
 - `G-4` Organisations are first-class identities, with members
 - `G-5` koshr verifies actor ids and signing keys against sigillr, with caching and a bounded lifetime
 - `G-6` Each identity records its proofing level (self-asserted or verified)
