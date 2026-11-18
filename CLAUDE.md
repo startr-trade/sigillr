@@ -34,6 +34,8 @@ The board is published at <https://github.com/startr-trade/sigillr-board>. Clone
 - The source of truth is a git repository of YAML records and public keys; only the service writes to it, and anyone can read it
 - The relational index is disposable, rebuilt from the repository, and used only for faster responses
 - A user_id or pseudonym that looks like an email address (including obfuscated forms) is refused
+- Authorisations given to OIDC clients are kept in the private store, never in git; the user can see and revoke them on the site
+- A user can disable their identity irrevocably, which revokes every key and deletes all their private data (TOTP secret, recovery-code hashes, authorisations and tokens)
 - Published values stay in the public git history permanently (history is never rewritten), and users are told so, and acknowledge it, before anything is published
 
 **How work moves here** — each stage asks only for what it needs; `kanbanr check <CODE>` names what the next one still lacks:
