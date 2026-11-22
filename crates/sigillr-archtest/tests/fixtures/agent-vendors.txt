@@ -1,0 +1,8 @@
+Claude
+Anthropic
+Copilot
+Cursor
+Codex
+Gemini
+ChatGPT
+OpenAI
