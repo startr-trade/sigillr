@@ -156,6 +156,12 @@ jobs:
       - uses: taiki-e/install-action@ab49d3c64680143e184118bed66a46419fc15519 # v2.90.5
         with:
           tool: cargo-cyclonedx@0.5.7
+      # kanbanr writes the notes to docs/guide/releases/v<version>.md; check here, because this job
+      # runs on dry runs too and the publish step that reads them does not.
+      - name: release notes exist
+        run: |
+          version="$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[] | select(.name == "sigillr") | .version')"
+          test -f "docs/guide/releases/v${version}.md" || { echo "::error::docs/guide/releases/v${version}.md is missing"; exit 1; }
       - name: cargo cyclonedx
         run: |
           version="$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[] | select(.name == "sigillr") | .version')"
@@ -245,8 +251,7 @@ jobs:
       - name: gh release create
         if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
         run: |
-          version="${GITHUB_REF_NAME#v}"
           gh release create "$GITHUB_REF_NAME" --verify-tag --latest \
-            --notes-file "docs/guide/releases/${version}.md" \
+            --notes-file "docs/guide/releases/${GITHUB_REF_NAME}.md" \
             artifacts/* \
             scripts/install.sh scripts/install.ps1
