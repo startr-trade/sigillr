@@ -123,3 +123,29 @@ fn actionlint_passes() {
         String::from_utf8_lossy(&out.stderr)
     );
 }
+
+/// R-6. codeql.yml is one job `sast`, run on `release/**` pushes and on demand, whose analyze
+/// step has `category: sast`.
+#[test]
+fn codeql_runs_as_sast_on_release_branches() {
+    let text = read(".github/workflows/codeql.yml");
+    let lines: Vec<&str> = text.lines().map(str::trim).collect();
+    for needle in [
+        "sast:",
+        "workflow_dispatch:",
+        "branches: [\"release/**\"]",
+        "category: sast",
+        "languages: rust",
+    ] {
+        assert!(lines.contains(&needle), "codeql.yml lacks `{needle}`");
+    }
+    let jobs = text.lines().skip_while(|l| *l != "jobs:").skip(1);
+    let names: Vec<&str> = jobs
+        .filter(|l| l.starts_with("  ") && !l.starts_with("   ") && l.trim_end().ends_with(':'))
+        .collect();
+    assert_eq!(
+        names,
+        ["  sast:"],
+        "codeql.yml must hold exactly the job sast"
+    );
+}
