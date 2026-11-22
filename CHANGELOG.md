@@ -11,16 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Release 0.1.0 claiming the Sigillr name on crates.io (FEAT-008)
-
-### Changed
-
-- Rust workspace skeleton (FEAT-001)
-- MIT/Apache-2.0 dual licence and community files (FEAT-002)
-- Brand assets: mark, lockups, icons and social preview (FEAT-003)
-- README with the light/dark lockup (FEAT-004)
-- mdBook user guide (FEAT-005)
-- CI: make ci matching GitHub Actions, with test tiers and portability guards (FEAT-006)
-- Release workflow (FEAT-007)
-- Architecture compliance review: open-source shape and CI (FEAT-009)
-- Agent-neutral from the start: Sigillr speaks of agents, with Claude Code as one adapter (MNT-001)
+- The `sigillr` command with `--version` and `--help`, published on crates.io.
+- Release archives for Linux, macOS and Windows with SHA-256 checksums, a CycloneDX SBOM, build-provenance attestations, and the `install.sh` / `install.ps1` installers.
+- The user guide (mdBook): introduction, running an instance, configuration reference.
+- The Rust workspace on a pinned toolchain, with one crate per component.
+- `make ci` and the GitHub Actions workflows: CI on three systems, no-C build proof, supply-chain checks (cargo-deny), CodeQL, docs and release.
+- Repository checks for the toolchain pin, pinned actions, licences, brand assets, README, guide links, release workflow and agent-neutral wording.
+- Brand assets: mark, light and dark lockups, favicon, app icon and social preview.
+- MIT OR Apache-2.0 licence, CONTRIBUTING, SECURITY, CODE_OF_CONDUCT and CONTRIBUTORS.
