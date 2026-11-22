@@ -71,6 +71,6 @@ jobs:
           save-if: ${{ github.ref == 'refs/heads/main' }}
       - uses: taiki-e/install-action@ab49d3c64680143e184118bed66a46419fc15519 # v2.90.5
         with:
-          tool: mdbook,cargo-nextest
+          tool: mdbook,cargo-nextest,actionlint,cargo-deny
       - name: make test
         run: make test
