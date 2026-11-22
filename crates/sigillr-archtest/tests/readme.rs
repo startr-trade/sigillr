@@ -77,3 +77,40 @@ fn readme_has_picture_lockup_and_links() {
         );
     }
 }
+
+/// DEF-004 R-1. crates.io cannot resolve repository-relative images, so every image in the README
+/// is an absolute https URL; a raw.githubusercontent.com URL on main names a file that exists.
+#[test]
+fn readme_images_are_absolute() {
+    let readme = read("README.md");
+    let root = repo_root();
+    for attr in ["src=\"", "srcset=\""] {
+        let mut rest = readme.as_str();
+        while let Some(i) = rest.find(attr) {
+            rest = &rest[i + attr.len()..];
+            let url = &rest[..rest.find('"').unwrap_or(rest.len())];
+            assert!(
+                url.starts_with("https://"),
+                "README image {url} is not an absolute https URL"
+            );
+            if let Some(path) =
+                url.strip_prefix("https://raw.githubusercontent.com/startr-trade/sigillr/main/")
+            {
+                assert!(
+                    root.join(path).exists(),
+                    "README image {url} names {path}, which does not exist"
+                );
+            }
+        }
+    }
+}
+
+/// DEF-004 R-2. The README describes the released crate, with no pre-release note.
+#[test]
+fn readme_has_no_pre_release_note() {
+    let readme = read("README.md").to_lowercase();
+    assert!(
+        !readme.contains("no public release"),
+        "README still says there is no public release"
+    );
+}

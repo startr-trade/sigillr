@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/sigillr-lockup-dark.svg">
-    <img src="assets/brand/sigillr-lockup-light.svg" alt="Sigillr" width="360">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/startr-trade/sigillr/main/assets/brand/sigillr-lockup-dark.svg">
+    <img src="https://raw.githubusercontent.com/startr-trade/sigillr/main/assets/brand/sigillr-lockup-light.svg" alt="Sigillr" width="360">
   </picture>
 </p>
 
@@ -18,8 +18,6 @@ Documentation: <https://startr-trade.github.io/sigillr/> (the user guide sources
 Early. Version 0.1.0 claims the name and answers `--version` and `--help`; the registry itself is still being built.
 
 ## Install
-
-> There is no public release yet, so `cargo install` and the release binaries below do not work until the first public release. Until then, build from source: `cargo build --release --locked -p sigillr`.
 
 ```sh
 cargo install sigillr
