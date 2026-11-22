@@ -185,3 +185,29 @@ fn sbom_step_selects_the_crate_by_manifest_path() {
         "cargo cyclonedx has no -p/--package option: {line}"
     );
 }
+
+/// DEF-003 R-1. kanbanr writes the notes to `docs/guide/releases/v<version>.md`: the release step
+/// reads that path from the tag name as is, and a step that also runs on dry runs checks the file exists.
+#[test]
+fn release_notes_path_matches_kanbanr() {
+    let text = read(".github/workflows/release.yml");
+    assert!(
+        text.contains("--notes-file \"docs/guide/releases/${GITHUB_REF_NAME}.md\""),
+        "gh release create must read docs/guide/releases/${{GITHUB_REF_NAME}}.md"
+    );
+    assert!(
+        text.contains("test -f \"docs/guide/releases/v${version}.md\""),
+        "a dry-run step must check docs/guide/releases/v${{version}}.md exists"
+    );
+    for entry in
+        std::fs::read_dir(sigillr_archtest::repo_root().join("docs/guide/releases")).unwrap()
+    {
+        let name = entry.unwrap().file_name().into_string().unwrap();
+        if name != "README.md" {
+            assert!(
+                name.starts_with('v') && name.ends_with(".md"),
+                "release notes {name} are not named v<version>.md"
+            );
+        }
+    }
+}
