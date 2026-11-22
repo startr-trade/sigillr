@@ -149,3 +149,31 @@ fn codeql_runs_as_sast_on_release_branches() {
         "codeql.yml must hold exactly the job sast"
     );
 }
+
+/// DEF-001 R-1. The test job installs the tools its archtests run (actionlint, cargo-deny) before `make test`.
+#[test]
+fn ci_test_job_installs_actionlint_and_cargo_deny() {
+    let text = read(".github/workflows/ci.yml");
+    let lines: Vec<&str> = text.lines().collect();
+    let start = lines
+        .iter()
+        .position(|l| *l == "  test:")
+        .expect("ci.yml has a test job");
+    let end = lines[start + 1..]
+        .iter()
+        .position(|l| l.starts_with("  ") && !l.starts_with("   ") && l.trim_end().ends_with(':'))
+        .map_or(lines.len(), |i| start + 1 + i);
+    let job = &lines[start..end];
+    let make_test = job
+        .iter()
+        .position(|l| l.trim() == "run: make test")
+        .expect("the test job runs make test");
+    let installs = job[..make_test].iter().any(|l| {
+        let t = l.trim();
+        t.starts_with("tool:") && t.contains("actionlint") && t.contains("cargo-deny")
+    });
+    assert!(
+        installs,
+        "ci.yml's test job must install actionlint and cargo-deny before `make test`"
+    );
+}
