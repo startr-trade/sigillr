@@ -187,33 +187,33 @@ dependencies = [
 
 [[package]]
 name = "sigillr"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "clap",
 ]
 
 [[package]]
 name = "sigillr-api"
-version = "0.1.0"
+version = "0.1.1"
 
 [[package]]
 name = "sigillr-archtest"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "toml",
 ]
 
 [[package]]
 name = "sigillr-index"
-version = "0.1.0"
+version = "0.1.1"
 
 [[package]]
 name = "sigillr-store"
-version = "0.1.0"
+version = "0.1.1"
 
 [[package]]
 name = "sigillr-web"
-version = "0.1.0"
+version = "0.1.1"
 
 [[package]]
 name = "strsim"
