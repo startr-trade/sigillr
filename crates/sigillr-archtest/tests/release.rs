@@ -105,3 +105,61 @@ fn release_workflow_checks_ci_first() {
         "publish does not run cargo publish --dry-run first"
     );
 }
+
+/// R-5. `artifact-scan` runs Trivy over the archives and the SBOM (HIGH,CRITICAL, fixable only,
+/// failing the job), runs in a dry run too, and `publish` needs it.
+#[test]
+fn release_workflow_scans_artifacts_before_publish() {
+    let text = read(".github/workflows/release.yml");
+    let jobs = jobs(&text);
+    let scan = jobs.get("artifact-scan").expect("no artifact-scan job");
+    assert!(scan.body.contains("aquasecurity/trivy-action@"));
+    assert!(scan.body.contains("scan-type: fs"), "no fs scan");
+    assert!(scan.body.contains("scan-type: sbom"), "no sbom scan");
+    assert!(scan.body.contains("severity: HIGH,CRITICAL"));
+    assert!(scan.body.contains("ignore-unfixed: true"));
+    assert!(scan.body.contains("exit-code: \"1\""));
+    assert!(
+        !scan.body.contains("dry_run") && !scan.body.contains("    if:"),
+        "artifact-scan must run in a dry run too"
+    );
+    assert!(
+        jobs.get("publish")
+            .expect("no publish job")
+            .needs
+            .iter()
+            .any(|n| n == "artifact-scan"),
+        "publish does not need artifact-scan"
+    );
+}
+
+/// R-6. `publish` attests build provenance for the archives, and only `publish` may mint tokens.
+#[test]
+fn release_attests_build_provenance() {
+    let text = read(".github/workflows/release.yml");
+    let jobs = jobs(&text);
+    let publish = jobs.get("publish").expect("no publish job");
+    assert!(
+        publish.body.contains("actions/attest-build-provenance@"),
+        "publish has no attest-build-provenance step"
+    );
+    assert!(
+        publish.body.contains("artifacts/*.tar.gz") && publish.body.contains("artifacts/*.zip")
+    );
+    assert!(
+        publish.body.contains("id-token: write") && publish.body.contains("attestations: write")
+    );
+    for (name, job) in &jobs {
+        if name != "publish" {
+            assert!(
+                !job.body.contains("id-token: write") && !job.body.contains("attestations: write"),
+                "job `{name}` must not have id-token or attestations write"
+            );
+        }
+    }
+    let top = text.split("\njobs:").next().expect("header");
+    assert!(
+        !top.contains("id-token: write"),
+        "top-level permissions grant id-token"
+    );
+}

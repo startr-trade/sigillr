@@ -11,7 +11,10 @@ mod unix {
     fn host_target() -> &'static str {
         let uname = |flag: &str| {
             let out = Command::new("uname").arg(flag).output().expect("uname");
-            String::from_utf8(out.stdout).expect("utf8").trim().to_string()
+            String::from_utf8(out.stdout)
+                .expect("utf8")
+                .trim()
+                .to_string()
         };
         match (uname("-s").as_str(), uname("-m").as_str()) {
             ("Linux", "x86_64" | "amd64") => "x86_64-unknown-linux-gnu",
