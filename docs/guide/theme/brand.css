@@ -1,0 +1,31 @@
+/* Sigillr brand (provr BRAND.md): Indigo #26317E / Periwinkle #AEB6E8 ink, Saffron accent,
+   White / Night #0F1117 background. mdBook switches themes with a class on <html>, not with
+   prefers-color-scheme, so both lockups are in the page and the theme shows one. */
+:root, html.light, html.rust {
+  --links: #26317E;
+  --sidebar-active: #E8871E;
+}
+html.coal, html.navy, html.ayu {
+  --bg: #0F1117;
+  --fg: #C9CDE4;
+  --links: #F49D1A;
+  --sidebar-active: #F49D1A;
+}
+html.coal h1, html.coal h2, html.coal h3, html.navy h1, html.navy h2, html.navy h3,
+html.ayu h1, html.ayu h2, html.ayu h3 { color: #EDEFF9; }
+html.light h1, html.light h2, html.light h3 { color: #26317E; }
+
+.brand-lockup { margin: 0.5em 0 1.5em; }
+.brand-lockup img { max-width: 540px; width: 100%; height: auto; }
+.brand-lockup .on-dark { display: none; }
+html.coal .brand-lockup .on-light,
+html.navy .brand-lockup .on-light,
+html.ayu .brand-lockup .on-light { display: none; }
+html.coal .brand-lockup .on-dark,
+html.navy .brand-lockup .on-dark,
+html.ayu .brand-lockup .on-dark { display: inline; }
+/* The lockup already says "Sigillr": the heading stays for the table of contents, search and
+   screen readers, but is not drawn twice. */
+main h1:first-child:has(+ .brand-lockup) {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
