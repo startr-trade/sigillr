@@ -159,7 +159,7 @@ jobs:
       - name: cargo cyclonedx
         run: |
           version="$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[] | select(.name == "sigillr") | .version')"
-          cargo cyclonedx --format json --all-features -p sigillr --override-filename sbom
+          cargo cyclonedx --manifest-path crates/sigillr/Cargo.toml --format json --all-features --override-filename sbom
           mkdir -p dist
           cp crates/sigillr/sbom.json "dist/sigillr-${version}.cdx.json"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
