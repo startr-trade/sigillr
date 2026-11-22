@@ -163,3 +163,25 @@ fn release_attests_build_provenance() {
         "top-level permissions grant id-token"
     );
 }
+
+/// DEF-002 R-1. cargo-cyclonedx picks the package by `--manifest-path`; it has no `-p`.
+#[test]
+fn sbom_step_selects_the_crate_by_manifest_path() {
+    let text = read(".github/workflows/release.yml");
+    let line = text
+        .lines()
+        .find(|l| l.trim_start().starts_with("cargo cyclonedx"))
+        .expect("release.yml runs cargo cyclonedx");
+    let args: Vec<&str> = line.split_whitespace().collect();
+    assert!(
+        args.windows(2)
+            .any(|w| w == ["--manifest-path", "crates/sigillr/Cargo.toml"]),
+        "the sbom step must select the crate with --manifest-path crates/sigillr/Cargo.toml: {line}"
+    );
+    assert!(
+        !args
+            .iter()
+            .any(|a| *a == "-p" || a.starts_with("--package")),
+        "cargo cyclonedx has no -p/--package option: {line}"
+    );
+}
