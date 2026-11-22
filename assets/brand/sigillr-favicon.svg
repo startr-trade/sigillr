@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="sigillr">
+  <!-- Favicon cut of the seal: a solid disc with a ground ring and boss, a heavy thread, the saffron dot. Theme-aware. -->
+  <style>
+    .ink{fill:#26317E}.line{stroke:#26317E}.ground{fill:#FFFFFF}.gline{stroke:#FFFFFF}
+    @media (prefers-color-scheme: dark){.ink{fill:#AEB6E8}.line{stroke:#AEB6E8}.ground{fill:#0F1117}.gline{stroke:#0F1117}}
+  </style>
+  <circle class="ink" cx="28" cy="28" r="24"/>
+  <circle class="gline" cx="28" cy="28" r="15" fill="none" stroke-width="3.5"/>
+  <circle class="ground" cx="28" cy="28" r="6"/>
+  <path class="line" d="M28 52 V54 C28 58 31 60 35 60 H44" fill="none" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="53" cy="55" r="8" fill="#E8871E"/>
+</svg>
