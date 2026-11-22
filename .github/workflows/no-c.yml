@@ -1,0 +1,40 @@
+name: no-c
+
+# Whether sigillr builds without a C compiler changes only with its dependencies or toolchain, so
+# this runs when those change, nightly, and on demand.
+on:
+  push:
+    paths:
+      - Cargo.toml
+      - Cargo.lock
+      - rust-toolchain.toml
+      - "crates/*/Cargo.toml"
+      - .github/workflows/no-c.yml
+  pull_request:
+    paths:
+      - Cargo.toml
+      - Cargo.lock
+      - rust-toolchain.toml
+      - "crates/*/Cargo.toml"
+      - .github/workflows/no-c.yml
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  no-c:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - name: rustup show
+        run: rustup show
+      - name: make no-c
+        run: make no-c
