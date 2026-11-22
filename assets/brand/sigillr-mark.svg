@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="160" height="160" role="img" aria-label="sigillr mark">
+  <!-- A round signet: a seal ring with its boss. The thread leaves the seal through its punched hole and leads to a saffron dot, the moment of verification. -->
+  <g transform="translate(0,0) scale(1)">
+    <circle cx="68" cy="64" r="46" fill="#FFFFFF" stroke="#26317E" stroke-width="5"/>
+    <circle cx="68" cy="64" r="33" fill="none" stroke="#26317E" stroke-width="3" stroke-dasharray="3 5" stroke-linecap="round"/>
+    <circle cx="68" cy="64" r="15" fill="#26317E"/>
+    <path d="M68 110 V122 C68 132 74 138 84 138 H108" fill="none" stroke="#26317E" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="68" cy="110" r="7" fill="#FFFFFF" stroke="#26317E" stroke-width="4"/>
+    <circle cx="122" cy="138" r="13" fill="#E8871E"/>
+  </g>
+</svg>
