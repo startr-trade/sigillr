@@ -11,8 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Release workflow looks for the notes at releases/0.1.0.md; kanbanr writes releases/v0.1.0.md (DEF-003)
-- README on crates.io: broken logo and a stale no-public-release note (DEF-004)
+- The README shows the logo on crates.io and no longer says there is no public release (DEF-004).
+- The release workflow reads the release notes under the tag's name and checks they exist on every dry run (DEF-003).
 
 ## [0.1.0] - 2026-11-22
 
