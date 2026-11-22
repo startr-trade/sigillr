@@ -1,12 +1,18 @@
 [package]
 name = "sigillr"
-description = "sigillr: public identity registry command"
+description = "A public identity registry: register your certificate's key under a pseudonym, and let anyone check it"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 rust-version.workspace = true
 repository.workspace = true
 readme = "../../README.md"
+keywords = ["identity", "pki", "mtls", "openid-connect", "registry"]
+categories = ["command-line-utilities", "authentication", "cryptography"]
+publish = true
+
+[dependencies]
+clap = { workspace = true }
 
 [lints]
 workspace = true
