@@ -17,5 +17,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The Rust workspace on a pinned toolchain, with one crate per component.
 - `make ci` and the GitHub Actions workflows: CI on three systems, no-C build proof, supply-chain checks (cargo-deny), CodeQL, docs and release.
 - Repository checks for the toolchain pin, pinned actions, licences, brand assets, README, guide links, release workflow and agent-neutral wording.
-- Brand assets: mark, light and dark lockups, favicon, app icon and social preview.
+- Brand assets: mark, light and dark lockups with the Latin origin word *sigillum*, favicon, app icon and social preview.
 - MIT OR Apache-2.0 licence, CONTRIBUTING, SECURITY, CODE_OF_CONDUCT and CONTRIBUTORS.
