@@ -150,7 +150,8 @@ fn codeql_runs_as_sast_on_release_branches() {
     );
 }
 
-/// DEF-001 R-1. The test job installs the tools its archtests run (actionlint, cargo-deny) before `make test`.
+/// DEF-001 R-1. The test job installs the tools its archtests run (actionlint, cargo-deny) before
+/// `make test`: cargo-deny through install-action, actionlint through its pinned download script.
 #[test]
 fn ci_test_job_installs_actionlint_and_cargo_deny() {
     let text = read(".github/workflows/ci.yml");
@@ -168,12 +169,26 @@ fn ci_test_job_installs_actionlint_and_cargo_deny() {
         .iter()
         .position(|l| l.trim() == "run: make test")
         .expect("the test job runs make test");
-    let installs = job[..make_test].iter().any(|l| {
+    let before = &job[..make_test];
+    let deny = before.iter().any(|l| {
         let t = l.trim();
-        t.starts_with("tool:") && t.contains("actionlint") && t.contains("cargo-deny")
+        t.starts_with("tool:") && t.contains("cargo-deny")
     });
+    // install-action cannot install actionlint (run 45000700624): it must come from the
+    // commit-pinned download script, as in the lint job, and never from install-action.
+    let actionlint_by_install_action = before.iter().any(|l| {
+        let t = l.trim();
+        t.starts_with("tool:") && t.contains("actionlint")
+    });
+    let actionlint_by_script = before
+        .iter()
+        .any(|l| l.contains("scripts/download-actionlint.bash"));
     assert!(
-        installs,
-        "ci.yml's test job must install actionlint and cargo-deny before `make test`"
+        deny,
+        "ci.yml's test job must install cargo-deny before `make test`"
+    );
+    assert!(
+        actionlint_by_script && !actionlint_by_install_action,
+        "ci.yml's test job must install actionlint with the pinned download script before `make test`"
     );
 }
