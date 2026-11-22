@@ -61,3 +61,38 @@ fn brand_assets_present() {
         assert_eq!((bw, bh), (*w, *h), "{name}: size");
     }
 }
+
+/// MNT-002 R-1. The lockups and the social preview name the Latin origin word in their aria-label.
+#[test]
+fn lockups_name_the_latin_origin_word() {
+    for name in [
+        "sigillr-lockup-light.svg",
+        "sigillr-lockup-dark.svg",
+        "sigillr-social-preview.svg",
+    ] {
+        let text = fs::read_to_string(brand_dir().join(name)).expect(name);
+        let label = text
+            .split("aria-label=\"")
+            .nth(1)
+            .and_then(|s| s.split('"').next())
+            .unwrap_or("");
+        assert!(
+            label.contains("sigillum"),
+            "{name}: aria-label {label:?} lacks sigillum"
+        );
+    }
+}
+
+/// MNT-002 R-2. The user guide's lockup copies equal the brand assets.
+#[test]
+fn guide_lockups_match_brand_assets() {
+    let guide = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../docs/guide/images/brand");
+    for name in ["sigillr-lockup-light.svg", "sigillr-lockup-dark.svg"] {
+        let a = fs::read(brand_dir().join(name)).expect(name);
+        let b = fs::read(guide.join(name)).expect(name);
+        assert!(
+            a == b,
+            "docs/guide/images/brand/{name} differs from assets/brand/{name}"
+        );
+    }
+}
