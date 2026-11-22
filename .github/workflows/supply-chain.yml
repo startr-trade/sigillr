@@ -1,0 +1,41 @@
+name: supply-chain
+
+# Advisories, licences, bans and sources (deny.toml). Runs when dependencies change, nightly, on
+# demand and on a release tag; the release requires its result on the tag's tip.
+on:
+  push:
+    branches: [main]
+    paths:
+      - Cargo.toml
+      - Cargo.lock
+      - rust-toolchain.toml
+      - "crates/*/Cargo.toml"
+      - deny.toml
+      - .github/workflows/supply-chain.yml
+    # Path filters are not evaluated for tag pushes: every release tag runs.
+    tags: ["v*"]
+  pull_request:
+    paths:
+      - Cargo.toml
+      - Cargo.lock
+      - rust-toolchain.toml
+      - "crates/*/Cargo.toml"
+      - deny.toml
+      - .github/workflows/supply-chain.yml
+  schedule:
+    - cron: "41 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  supply-chain:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: EmbarkStudios/cargo-deny-action@3c6349835b2b7b196a839186cb8b78e02f7b5f25 # v2.1.1
+        with:
+          command: check advisories licenses bans sources
+          arguments: --locked
