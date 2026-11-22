@@ -71,6 +71,12 @@ jobs:
           save-if: ${{ github.ref == 'refs/heads/main' }}
       - uses: taiki-e/install-action@ab49d3c64680143e184118bed66a46419fc15519 # v2.90.5
         with:
-          tool: mdbook,cargo-nextest,actionlint,cargo-deny
+          tool: mdbook,cargo-nextest,cargo-deny
+      # install-action cannot install actionlint; use the lint job's pinned script (bash on all three systems).
+      - name: install actionlint
+        run: |
+          bash <(curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/914e7df21a07ef503a81201c76d2b11c789d3fca/scripts/download-actionlint.bash) 1.7.12
+          # pwd -W gives Windows a D:/… path it can put on PATH; elsewhere it fails and pwd is used.
+          { pwd -W 2>/dev/null || pwd; } >> "$GITHUB_PATH"
       - name: make test
         run: make test
