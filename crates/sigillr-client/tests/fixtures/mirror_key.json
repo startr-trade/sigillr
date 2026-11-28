@@ -1,0 +1,19 @@
+{
+  "fingerprint": "gpg:0123456789abcdef0123456789abcdef01234567",
+  "key_type": "openpgp",
+  "algorithm": "ed25519",
+  "usage": "signing",
+  "status": "active",
+  "not_before": "2026-11-22T00:00:00Z",
+  "not_after": null,
+  "revoked": null,
+  "issuer": "self-signed",
+  "matched_via": "subkey",
+  "user_id": "alice",
+  "identity": { "user_id": "alice", "kind": "person", "pseudonym": "Alice", "proofing": "verified", "status": "disabling", "pending_recovery": null },
+  "registry_commit": "3f2a9c1e5b7d4f6a8c0e2b4d6f8a1c3e5b7d9f0a",
+  "checked_at": "2026-11-23T08:30:00Z",
+  "cache_max_age": 60,
+  "instance": "https://sigillr.provr.dev",
+  "mirror": { "upstream": "https://sigillr.provr.dev", "synced_at": "2026-11-23T08:00:00Z", "stale": false, "stale_after_seconds": 86400 }
+}

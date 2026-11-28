@@ -1,0 +1,25 @@
+{
+  "fingerprint": "sha256:abababababababababababababababababababababababababababababababab",
+  "key_type": "x509",
+  "usage": "login",
+  "status": "active",
+  "not_before": "2026-11-22T00:00:00Z",
+  "not_after": "2027-11-22T00:00:00Z",
+  "revoked": null,
+  "issuer": {
+    "dn": "CN=Test Intermediate,O=sigillr test"
+  },
+  "user_id": "alice",
+  "identity": {
+    "user_id": "alice",
+    "kind": "person",
+    "pseudonym": "Alice",
+    "proofing": "self-asserted",
+    "status": "active",
+    "pending_recovery": null
+  },
+  "registry_commit": "3f2a9c1e5b7d4f6a8c0e2b4d6f8a1c3e5b7d9f0a",
+  "checked_at": "2026-11-22T10:00:05Z",
+  "cache_max_age": 60,
+  "instance": "https://sigillr.provr.dev"
+}

@@ -211,3 +211,137 @@ fn release_notes_path_matches_kanbanr() {
         }
     }
 }
+
+const CLIENT_TAG: &str = "\"sigillr-client-v[0-9]+.[0-9]+.[0-9]+\"";
+const SERVER_TAG: &str = "\"v[0-9]+.[0-9]+.[0-9]+\"";
+const ON_CLIENT_TAG: &str = "startsWith(github.ref, 'refs/tags/sigillr-client-v')";
+
+/// The `- "…"` entries under `on.push.tags`.
+fn tag_patterns(text: &str) -> Vec<String> {
+    let head = text.split("\njobs:").next().expect("header");
+    let tags = head.split("    tags:\n").nth(1).expect("on.push.tags");
+    tags.lines()
+        .map_while(|l| l.strip_prefix("      - "))
+        .map(|p| p.trim().to_string())
+        .collect()
+}
+
+/// The step of `job` whose `run:` line is exactly `cmd`, by position.
+fn step_index(job: &Job, cmd: &str) -> Option<usize> {
+    job.body
+        .split("\n      - ")
+        .position(|s| s.lines().any(|l| l.trim() == format!("run: {cmd}")))
+}
+
+/// FTR-004 T12. The workflow triggers on a server tag and on a client tag, and no tag matches
+/// both: a tag filter matches the whole name, and the two patterns start with different literals.
+#[test]
+fn release_workflow_triggers_on_a_client_tag() {
+    let text = read(".github/workflows/release.yml");
+    let tags = tag_patterns(&text);
+    assert_eq!(
+        tags,
+        [SERVER_TAG, CLIENT_TAG],
+        "on.push.tags must be the server tag and the client tag"
+    );
+    let literal = |p: &str| -> String {
+        p.trim_matches('"')
+            .chars()
+            .take_while(|c| c.is_ascii_alphanumeric() || *c == '-')
+            .collect()
+    };
+    let (s, c) = (literal(SERVER_TAG), literal(CLIENT_TAG));
+    assert!(
+        !s.starts_with(&c) && !c.starts_with(&s),
+        "the tag patterns' literal prefixes `{s}` and `{c}` overlap"
+    );
+}
+
+/// FTR-004 T12. On a client tag, `publish-client` runs after ci-green, refuses a tag that is not
+/// the crate's version, runs the publish dry run, then publishes (skipped on dry_run) with the
+/// credential the server publish uses.
+#[test]
+fn client_tag_checks_the_version_and_dry_runs_before_publishing() {
+    let text = read(".github/workflows/release.yml");
+    let jobs = jobs(&text);
+    let client = jobs.get("publish-client").expect("no publish-client job");
+    assert_eq!(
+        client.needs,
+        ["ci-green"],
+        "publish-client must need ci-green"
+    );
+    assert!(
+        client
+            .body
+            .contains(&format!("    if: ${{{{ {ON_CLIENT_TAG} }}}}")),
+        "publish-client must run only on a client tag"
+    );
+    assert!(
+        client
+            .body
+            .contains("select(.name == \"sigillr-client\") | .version")
+            && client
+                .body
+                .contains("if [ \"${GITHUB_REF_NAME}\" != \"sigillr-client-v${version}\" ]; then")
+            && client.body.contains("exit 1"),
+        "publish-client must refuse a tag that is not sigillr-client-v<crate version>"
+    );
+    let check = client
+        .body
+        .split("\n      - ")
+        .position(|s| s.contains("GITHUB_REF_NAME"))
+        .expect("version check step");
+    let dry = step_index(client, "cargo publish -p sigillr-client --dry-run --locked")
+        .expect("client dry run step");
+    let real = step_index(client, "cargo publish -p sigillr-client --locked")
+        .expect("client publish step");
+    assert!(
+        check < dry && dry < real,
+        "order must be version check, dry run, publish"
+    );
+    let step = client.body.split("\n      - ").nth(real).unwrap();
+    assert!(
+        step.contains("if:") && step.contains("inputs.dry_run"),
+        "the client publish is not skipped on dry_run:\n{step}"
+    );
+    assert!(
+        step.contains("CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}"),
+        "the client publish must use the workflow's crates.io credential"
+    );
+    for forbidden in ["gh release", "upload-artifact", "attest", "docker"] {
+        assert!(
+            !client.body.contains(forbidden),
+            "publish-client must do nothing but publish the crate: found `{forbidden}`"
+        );
+    }
+}
+
+/// FTR-004 T12. A server tag does not publish the client (its place in a server release arrives
+/// with v0.2.0), and a client tag runs none of the server's jobs.
+#[test]
+fn server_tag_does_not_publish_the_client() {
+    let text = read(".github/workflows/release.yml");
+    let jobs = jobs(&text);
+    for (name, job) in &jobs {
+        if name != "publish-client" {
+            assert!(
+                !job.body.contains("-p sigillr-client") && !job.body.contains("\"sigillr-client\""),
+                "job `{name}` must not publish or select sigillr-client"
+            );
+        }
+    }
+    let skip = format!("    if: ${{{{ !{ON_CLIENT_TAG} }}}}");
+    for name in ["no-c", "build", "sbom"] {
+        let job = jobs.get(name).unwrap_or_else(|| panic!("no {name} job"));
+        assert!(
+            job.body.contains(&skip),
+            "job `{name}` must skip on a client tag"
+        );
+    }
+    for name in ["artifact-scan", "publish"] {
+        assert!(
+            ["build", "sbom"].iter().any(|n| reaches(&jobs, name, n)),
+            "job `{name}` must follow a job that skips on a client tag"
+        );
+    }
+}

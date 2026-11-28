@@ -43,15 +43,18 @@ fn workspace_builds_and_tests_on_pinned_toolchain() {
         let manifest = std::fs::read_to_string(dir.join("Cargo.toml"))
             .unwrap_or_else(|e| panic!("{} has no Cargo.toml: {e}", dir.display()));
         let t: toml::Table = manifest.parse().expect("valid crate manifest");
-        let inherits = t
-            .get("package")
-            .and_then(|p| p.get("version"))
-            .and_then(|v| v.get("workspace"))
-            .and_then(|w| w.as_bool())
-            == Some(true);
+        // Inheriting from the workspace is the membership proof. A crate with its own version
+        // line (sigillr-client, FTR-004 Decisions) proves it through rust-version instead.
+        let inherits = |key: &str| {
+            t.get("package")
+                .and_then(|p| p.get(key))
+                .and_then(|v| v.get("workspace"))
+                .and_then(|w| w.as_bool())
+                == Some(true)
+        };
         assert!(
-            inherits,
-            "{} must use version.workspace = true",
+            inherits("version") || inherits("rust-version"),
+            "{} must use version.workspace = true (or rust-version.workspace = true with its own version line)",
             dir.display()
         );
     }

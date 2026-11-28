@@ -1,0 +1,40 @@
+{
+  "identity": { "user_id": "alice", "kind": "person", "pseudonym": "Alice", "proofing": "self-asserted", "status": "active", "pending_recovery": null },
+  "keys": [
+    {
+      "fingerprint": "sha256:1b4f0e9851971998e732078544c96b36c3d01cedf7caa332359d6f1d83567014",
+      "key_type": "x509",
+      "usage": "signing",
+      "status": "revoked",
+      "not_before": "2026-01-01T00:00:00Z",
+      "not_after": "2027-01-01T00:00:00Z",
+      "revoked": { "at": "2026-06-01T12:00:00Z", "by": "ca", "reason": "ca:keyCompromise" },
+      "issuer": { "dn": "CN=Example CA,O=Example" }
+    },
+    {
+      "fingerprint": "sha256:9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+      "key_type": "x509",
+      "usage": "login",
+      "status": "active",
+      "not_before": "2026-11-22T00:00:00Z",
+      "not_after": "2027-11-22T00:00:00Z",
+      "revoked": null,
+      "issuer": "self-signed"
+    },
+    {
+      "fingerprint": "ssh:5d41402abc4b2a76b9719d911017c592",
+      "key_type": "ssh",
+      "algorithm": "ssh-ed25519",
+      "usage": "signing",
+      "status": "active",
+      "not_before": "2026-11-22T00:00:00Z",
+      "not_after": null,
+      "revoked": null,
+      "issuer": "self-signed"
+    }
+  ],
+  "registry_commit": "3f2a9c1e5b7d4f6a8c0e2b4d6f8a1c3e5b7d9f0a",
+  "checked_at": "2026-11-22T10:00:05Z",
+  "cache_max_age": 60,
+  "instance": "https://sigillr.provr.dev"
+}

@@ -21,3 +21,18 @@ sigillr-index = { path = "crates/sigillr-index", version = "0.1.0" }
 sigillr-archtest = { path = "crates/sigillr-archtest", version = "0.1.0" }
 toml = "0.9"
 clap = { version = "4.5", features = ["derive"] }
+# FTR-004: the verifier client (pure Rust, Q-2).
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.154"
+time = { version = "0.3.47", features = ["serde", "formatting", "parsing"] }
+percent-encoding = "2"
+http = "1"
+thiserror = "2.0.18"
+# Held to the minor it was built on: pinning uses ureq::unversioned, which ureq may change in a minor release.
+ureq = { version = "~3.5.2", default-features = false, features = ["rustls-no-provider", "json"] }
+rustls = { version = "0.23.46", default-features = false, features = ["std", "tls12"] }
+rustls-graviola = "0.4"
+rustls-native-certs = "0.8"
+rustls-pki-types = "1"
+proptest = { version = "1.12.0", default-features = false, features = ["std"] }
+criterion = { version = "0.5.1", default-features = false }

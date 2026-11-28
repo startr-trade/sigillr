@@ -1,0 +1,49 @@
+[package]
+name = "sigillr-client"
+description = "Look up keys and user_ids in a Sigillr identity registry, online or from a mirror, with a bounded cache"
+# Its own version line, bumped only when its API or behaviour changes (FTR-004 Decisions).
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+homepage.workspace = true
+keywords = ["identity", "registry", "verification", "public-key", "sigillr"]
+categories = ["authentication", "cryptography", "api-bindings"]
+publish = true
+
+[lints]
+workspace = true
+
+[features]
+# Exports `testing::{FakeTransport, FakeClock}` for a dependent crate's tests; adds no dependency.
+testing = []
+
+[package.metadata.docs.rs]
+features = ["testing"]
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+time = { workspace = true }
+percent-encoding = { workspace = true }
+http = { workspace = true }
+thiserror = { workspace = true }
+ureq = { workspace = true }
+rustls = { workspace = true }
+rustls-graviola = { workspace = true }
+rustls-native-certs = { workspace = true }
+rustls-pki-types = { workspace = true }
+
+[dev-dependencies]
+# The crate's own tests use the fakes it exports.
+sigillr-client = { path = ".", features = ["testing"] }
+# On main ahead of Sigillr v0.2.0 (FTR-004 T12) the crate stands alone: the online test against
+# the lookup server as built (tests/online.rs) and its workspace-crate dev-dependencies return
+# with the integration merge.
+proptest = { workspace = true }
+criterion = { workspace = true }
+
+[[bench]]
+name = "cache"
+harness = false

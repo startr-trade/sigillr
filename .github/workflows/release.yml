@@ -2,10 +2,13 @@ name: release
 
 # A tag vX.Y.Z publishes the crate and the binaries. A manual run (workflow_dispatch) does everything
 # up to publishing and, with dry_run (the default), publishes nothing: run it once before the cut.
+# A tag sigillr-client-vX.Y.Z publishes the sigillr-client crate and nothing else (FTR-004 T12); a
+# server tag does not publish the client. A tag filter matches the whole tag name, so no tag matches both.
 on:
   push:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
+      - "sigillr-client-v[0-9]+.[0-9]+.[0-9]+"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -57,6 +60,7 @@ jobs:
   # The dependency-tier proof, rerun on the release commit.
   no-c:
     needs: ci-green
+    if: ${{ !startsWith(github.ref, 'refs/tags/sigillr-client-v') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     steps:
@@ -69,6 +73,7 @@ jobs:
 
   build:
     needs: ci-green
+    if: ${{ !startsWith(github.ref, 'refs/tags/sigillr-client-v') }}
     strategy:
       fail-fast: true
       matrix:
@@ -143,6 +148,7 @@ jobs:
   # B-027: the CycloneDX SBOM is attached to every release.
   sbom:
     needs: ci-green
+    if: ${{ !startsWith(github.ref, 'refs/tags/sigillr-client-v') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -255,3 +261,30 @@ jobs:
             --notes-file "docs/guide/releases/${GITHUB_REF_NAME}.md" \
             artifacts/* \
             scripts/install.sh scripts/install.ps1
+
+  # FTR-004 T12: the client crate alone, from a tag sigillr-client-vX.Y.Z, after CI: no archives, no
+  # SBOM, no GitHub release. The server jobs above skip on such a tag; artifact-scan and publish follow them.
+  publish-client:
+    needs: ci-green
+    if: ${{ startsWith(github.ref, 'refs/tags/sigillr-client-v') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - name: rustup show
+        run: rustup show
+      - name: the tag matches the client version
+        run: |
+          version="$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[] | select(.name == "sigillr-client") | .version')"
+          test -n "$version"
+          if [ "${GITHUB_REF_NAME}" != "sigillr-client-v${version}" ]; then
+            echo "tag ${GITHUB_REF_NAME} does not match the sigillr-client version ${version}"
+            exit 1
+          fi
+      - name: cargo publish --dry-run (sigillr-client)
+        run: cargo publish -p sigillr-client --dry-run --locked
+      - name: cargo publish (sigillr-client)
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: cargo publish -p sigillr-client --locked
